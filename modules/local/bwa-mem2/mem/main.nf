@@ -48,16 +48,20 @@ process BWAMEM2_ALIGN {
             --nthreads ${task.cpus} \\
             /dev/stdin | \\
         \\
-        sambamba sort \\
+        samtools sort \\
             ${args3} \\
-            --nthreads ${task.cpus} \\
-            --out ${output_fn} \\
+            --threads ${task.cpus} \\
+            --output-fmt BAM \\
+            -o ${output_fn} \\
             /dev/stdin
+
+    samtools index ${output_fn}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         bwa-mem2: \$(bwa-mem2 version 2>/dev/null)
         sambamba: \$(sambamba --version 2>&1 | egrep '^sambamba' | head -n 1 | awk '{ print \$NF }')
+        samtools: \$(samtools --version 2>&1 | egrep '^samtools' | awk '{ print \$NF }')
     END_VERSIONS
     """
 
